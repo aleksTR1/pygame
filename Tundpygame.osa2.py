@@ -218,3 +218,44 @@ while toori:
 
 pygame.quit()
 sys.exit()
+
+
+#2.2
+import pygame
+import sys
+
+pygame.init()
+
+# Ekraani suurus
+LAIUS, KORGUS = 640, 480
+ekraan = pygame.display.set_mode((LAIUS, KORGUS))
+pygame.display.set_caption("Harjutamine")
+
+# Funktsioon ruudustiku joonistamiseks
+def joonista_ruudustik(ekraan, ruudu_laius, ruudu_korgus, read, veerud, joone_varv):
+    tausta_varv = (144, 238, 144)  # hele roheline
+    for r in range(read):
+        for v in range(veerud):
+            x = v * ruudu_laius
+            y = r * ruudu_korgus
+            # Täidetud ruut
+            pygame.draw.rect(ekraan, tausta_varv, (x, y, ruudu_laius, ruudu_korgus))
+            # Ääris
+            pygame.draw.rect(ekraan, joone_varv, (x, y, ruudu_laius, ruudu_korgus), 1)
+
+# Põhiloogika
+toori = True
+while toori:
+    ekraan.fill((255, 255, 255))  # valge taust
+
+    # Joonista ruudustik: 20x20 ruudud, 24 rida, 32 veergu, punased äärised
+    joonista_ruudustik(ekraan, 20, 20, 24, 32, (255, 0, 0))
+
+    pygame.display.flip()
+
+    for sündmus in pygame.event.get():
+        if sündmus.type == pygame.QUIT:
+            toori = False
+
+pygame.quit()
+sys.exit()
