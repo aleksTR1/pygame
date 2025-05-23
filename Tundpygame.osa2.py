@@ -136,71 +136,85 @@
 # pygame.quit()
 # sys.exit()
 
+#2,1	
 import pygame
 import sys
+import math
 
 pygame.init()
 
-# Colors
-red = [255, 0, 0]
-green = [0, 255, 0]
-blue = [0, 0, 255]
-pink = [255, 153, 255]
-lGreen = [153, 255, 153]
-brown = [139, 69, 19]
-white = [255, 255, 255]
-gray = [200, 200, 200]
+# Värvid
+TAEVAS = (135, 206, 250)
+MURU = (34, 139, 34)
+PAIKE = (255, 223, 0)
+SEIN = (255, 240, 180)
+KATUS = (101, 67, 33)
+KORSTEN = (80, 40, 20)
+UKS = (139, 69, 19)
+VALGE = (255, 255, 255)
+RAAM = (0, 0, 100)
+HALL = (100, 100, 100)
 
-# Screen setup
-screen = pygame.display.set_mode([640, 480])
-pygame.display.set_caption("Majake")
-screen.fill(lGreen)
+# Ekraan
+LAIUS, KORGUS = 640, 480
+ekraan = pygame.display.set_mode((LAIUS, KORGUS))
+pygame.display.set_caption("Ilus maja")
+kell = pygame.time.Clock()
 
-def draw_house(x, y, width, height, surface, color):
-    """Draw a house with base, roof, window, and door"""
-    base_height = int((3 / 4) * height)
-    roof_height = int(height / 4)
+def joonista_paike(x, y, r):
+    pygame.draw.circle(ekraan, PAIKE, (x, y), r)
+    for nurk in range(0, 360, 30):
+        dx = int(r * 1.5 * math.cos(math.radians(nurk)))
+        dy = int(r * 1.5 * math.sin(math.radians(nurk)))
+        pygame.draw.line(ekraan, PAIKE, (x, y), (x + dx, y + dy), 2)
 
-    # Base rectangle
-    base_rect = pygame.Rect(x, y - base_height, width, base_height)
-    pygame.draw.rect(surface, color, base_rect)
+def joonista_maja(x, y, laius, korgus):
+    seinakorgus = int(korgus * 0.75)
+    katusekorgus = korgus - seinakorgus
 
-    # Roof triangle
-    roof_points = [
-        (x, y - base_height),
-        (x + width // 2, y - height),
-        (x + width, y - base_height)
-    ]
-    pygame.draw.polygon(surface, pink, roof_points)
+    # Seinad
+    pygame.draw.rect(ekraan, SEIN, (x, y - seinakorgus, laius, seinakorgus))
 
-    # Door
-    door_width = width // 5
-    door_height = base_height // 2
-    door_rect = pygame.Rect(x + width // 2 - door_width // 2, y - door_height, door_width, door_height)
-    pygame.draw.rect(surface, brown, door_rect)
+    # Katus
+    punktid = [(x, y - seinakorgus), (x + laius // 2, y - korgus), (x + laius, y - seinakorgus)]
+    pygame.draw.polygon(ekraan, KATUS, punktid)
 
-    # Window
-    window_size = width // 5
-    window_rect = pygame.Rect(x + width // 4 - window_size // 2, y - base_height + 20, window_size, window_size)
-    pygame.draw.rect(surface, white, window_rect)
-    pygame.draw.line(surface, gray, window_rect.topleft, window_rect.bottomright, 2)
-    pygame.draw.line(surface, gray, window_rect.topright, window_rect.bottomleft, 2)
+    # Korsten
+    korsten_l = laius // 12
+    korsten_k = korgus // 3
+    korsten_x = x + laius // 4
+    korsten_y = y - korgus - 32
+    pygame.draw.rect(ekraan, KORSTEN, (korsten_x, korsten_y, korsten_l, korsten_k))
 
-# Main game loop
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-    
-    # Clear screen
-    screen.fill(lGreen)
-    
-    # Draw house
-    draw_house(150, 400, 300, 300, screen, red)
-    
-    # Update display
+    # Uks
+    ukse_l = laius // 6
+    ukse_k = seinakorgus // 2
+    pygame.draw.rect(ekraan, UKS, (x + laius // 2 - ukse_l // 2, y - ukse_k, ukse_l, ukse_k))
+    pygame.draw.circle(ekraan, HALL, (x + laius // 2 + ukse_l // 3, y - ukse_k // 2), 3)
+
+    # Aken (üks)
+    akna_suurus = laius // 6
+    ax = x + int(laius * 0.15)
+    ay = y - seinakorgus // 2 - akna_suurus // 2
+    pygame.draw.rect(ekraan, VALGE, (ax, ay, akna_suurus, akna_suurus))
+    pygame.draw.rect(ekraan, RAAM, (ax, ay, akna_suurus, akna_suurus), 2)
+    pygame.draw.line(ekraan, RAAM, (ax, ay + akna_suurus // 2), (ax + akna_suurus, ay + akna_suurus // 2), 2)
+    pygame.draw.line(ekraan, RAAM, (ax + akna_suurus // 2, ay), (ax + akna_suurus // 2, ay + akna_suurus), 2)
+
+# Peatsükl
+toori = True
+while toori:
+    ekraan.fill(TAEVAS)
+    pygame.draw.rect(ekraan, MURU, (0, KORGUS - 80, LAIUS, 80))
+    joonista_paike(550, 80, 40)
+    joonista_maja(120, KORGUS - 80, 320, 360)
+
     pygame.display.flip()
+    kell.tick(60)
+
+    for sündmus in pygame.event.get():
+        if sündmus.type == pygame.QUIT:
+            toori = False
 
 pygame.quit()
 sys.exit()
